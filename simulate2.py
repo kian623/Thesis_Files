@@ -1,9 +1,9 @@
 """
-to calculate metrics from 2016-17 season to 2022-23 season
+for calculating round probabilities of each playoff team per conference
 """
 import simulate_round
-import playoffs_8teams
-import numpy as np
+import playoffs_8teams2
+import csv
 
 def reset_rating(teams,revert,current = None,conference = None,SeparateRatingPreviousRevert = False,BackTo1500 = False):
     if current == None: # for models with one rating per team
@@ -34,42 +34,15 @@ def change_name(old_name,new_name,teams,current_ratings):
     teams[new_name] = teams.pop(old_name)
     current_ratings[new_name] = current_ratings.pop(old_name) # for SEM and BEM
 
+
+# for probabilities per conference, edit if necessary
 def results_computer(data):
-    right_prediction = 0 # number of correct predictions
-    total_games = 0 # number of games with teams not having equal ratings
-    all_games = 0 # number of all games
-    brier = 0
-    logloss = 0
-    series_wins_squared_error = 0
-    conferences = 0
-    
-    results = {}
-    
-    for totals in data:
-        right_prediction += totals['right prediction']
-        total_games += totals['total games']
-        all_games += totals['all games']
-        brier += totals['brier']
-        logloss += totals['logloss']
-        if totals['round'] == 'eliminations':
-            series_wins_squared_error += totals['data']
-            conferences += 1
-        # uncomment following lines for accuracy metrics during playoffs
-        # else:
-            # right_prediction += totals['right prediction']
-            # total_games += totals['total games']
-            # all_games += totals['all games']
-            # brier += totals['brier']
-            # logloss += totals['logloss']
-        
-    results['prediction accuracy'] = right_prediction/total_games
-    results['brier'] = brier/all_games
-    results['logloss'] = logloss/all_games
-    results['root series wins squared error'] = (series_wins_squared_error/conferences) ** 0.5
-    
+    temp = [info['data'] for info in data if 'data' in info.keys()] # take data only at the end of elimination round
+    results = []
+    for result in temp:
+        results += result.values()
     return results
 
-# Modified Silver Model
 def simulate_SameRating(parameters,write_csv = False):
     # parameters = {k_, revert_season, revert_conference}
     
@@ -134,13 +107,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    series_wins_squared_error_temp = 0
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -186,12 +153,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -238,12 +200,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -292,12 +249,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -344,12 +296,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -396,12 +343,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -449,12 +391,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -500,12 +437,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -551,12 +483,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 1,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -605,12 +532,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -658,12 +580,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -709,12 +626,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -763,12 +675,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -815,12 +722,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -867,12 +769,7 @@ def simulate_SameRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -885,9 +782,101 @@ def simulate_SameRating(parameters,write_csv = False):
     
     data.append(info)
     
-    return results_computer(data)
+    # 2023-24
+    
+    # Commissioner
+    
+    reset_rating(teams,parameters['revert_season'])
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/eliminations.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['Magnolia'],
+        2 : teams['San Miguel'],
+        3 : teams['Ginebra'],
+        4 : teams['Phoenix'],
+        5 : teams['Meralco'],
+        6 : teams['NorthPort'],
+        7 : teams['Rain or Shine'],
+        8 : teams['TNT']
+    }
+    wins = {
+        1 : 2,
+        2 : 3,
+        3 : 1,
+        4 : 1,
+        5 : 0,
+        6 : 0,
+        7 : 0,
+        8 : 0,
+    }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
+    data.append(info)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/playoffs.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','playoffs',write_csv
+    )
+    data.append(info)
+    
+    # Philippine
+    
+    reset_rating(teams,parameters['revert_filipino'])
+    
+    info = simulate_round.game(
+        '2023-24/philippine/eliminations.csv',
+        parameters['k_filipino'],
+        teams,
+        '2023-24','philippine','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['San Miguel'],
+        2 : teams['Ginebra'],
+        3 : teams['Meralco'],
+        4 : teams['TNT'],
+        5 : teams['Rain or Shine'],
+        6 : teams['NLEX'],
+        7 : teams['Magnolia'],
+        8 : teams['Terrafirma'],
+    }
+    
+    # wins = {
+        # 1 : 3,
+        # 2 : 2,
+        # 3 : 1,
+        # 4 : 0,
+        # 5 : 1,
+        # 6 : 0,
+        # 7 : 0,
+        # 8 : 0
+    # }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
+    data.append(info)
+    
+    # info = simulate_round.game(
+        # '2023-24/philippine/playoffs.csv',
+        # parameters['k_filipino'],
+        # teams,
+        # '2023-24','philippine','playoffs',write_csv
+    # )
+    
+    # data.append(info)
+    
+    with open('Playoffs/modified_silver.csv','w',newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(results_computer(data))
 
-# Season Reset Model
 def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
     # parameters = {k_filipino, k_import, revert_season, revert_filipino, revert_import}
     
@@ -952,13 +941,8 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    series_wins_squared_error_temp = 0
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
     
     data.append(info)
     
@@ -1004,12 +988,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -1056,12 +1035,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1110,12 +1084,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -1162,12 +1131,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -1214,12 +1178,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1267,12 +1226,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -1318,12 +1272,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -1369,12 +1318,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 1,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1423,12 +1367,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1476,12 +1415,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -1527,12 +1461,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1581,12 +1510,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -1633,12 +1557,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -1685,12 +1604,7 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1703,9 +1617,101 @@ def simulate_SameRating_BackTo1500Yearly(parameters,write_csv = False):
     
     data.append(info)
     
-    return results_computer(data)
+    # 2023-24
+    
+    # Commissioner
+    
+    reset_rating(teams,parameters['revert_season'],BackTo1500 = True)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/eliminations.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['Magnolia'],
+        2 : teams['San Miguel'],
+        3 : teams['Ginebra'],
+        4 : teams['Phoenix'],
+        5 : teams['Meralco'],
+        6 : teams['NorthPort'],
+        7 : teams['Rain or Shine'],
+        8 : teams['TNT']
+    }
+    wins = {
+        1 : 2,
+        2 : 3,
+        3 : 1,
+        4 : 1,
+        5 : 0,
+        6 : 0,
+        7 : 0,
+        8 : 0,
+    }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
+    data.append(info)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/playoffs.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','playoffs',write_csv
+    )
+    data.append(info)
+    
+    # Philippine
+    
+    reset_rating(teams,parameters['revert_filipino'])
+    
+    info = simulate_round.game(
+        '2023-24/philippine/eliminations.csv',
+        parameters['k_filipino'],
+        teams,
+        '2023-24','philippine','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['San Miguel'],
+        2 : teams['Ginebra'],
+        3 : teams['Meralco'],
+        4 : teams['TNT'],
+        5 : teams['Rain or Shine'],
+        6 : teams['NLEX'],
+        7 : teams['Magnolia'],
+        8 : teams['Terrafirma'],
+    }
+    
+    # wins = {
+        # 1 : 3,
+        # 2 : 2,
+        # 3 : 1,
+        # 4 : 0,
+        # 5 : 1,
+        # 6 : 0,
+        # 7 : 0,
+        # 8 : 0
+    # }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
+    data.append(info)
+    
+    # info = simulate_round.game(
+        # '2023-24/philippine/playoffs.csv',
+        # parameters['k_filipino'],
+        # teams,
+        # '2023-24','philippine','playoffs',write_csv
+    # )
+    
+    # data.append(info)
+    
+    with open('Playoffs/season_reset.csv','w',newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(results_computer(data))
 
-# Conference Reset Model
 def simulate_SameRating_BackTo1500(parameters,write_csv = False):
     # parameters = {k_filipino, k_import, revert_season, revert_filipino, revert_import}
     
@@ -1770,13 +1776,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    series_wins_squared_error_temp = 0
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)\
     
     data.append(info)
     
@@ -1822,12 +1822,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -1874,12 +1869,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -1928,12 +1918,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -1980,13 +1965,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
-    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     data.append(info)
     
     info = simulate_round.game(
@@ -2032,12 +2011,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2085,12 +2059,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -2136,12 +2105,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -2187,12 +2151,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 1,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2241,12 +2200,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2294,12 +2248,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -2345,12 +2294,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2399,12 +2343,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -2451,12 +2390,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -2503,12 +2437,7 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2521,9 +2450,101 @@ def simulate_SameRating_BackTo1500(parameters,write_csv = False):
     
     data.append(info)
     
-    return results_computer(data)
+    # 2023-24
+    
+    # Commissioner
+    
+    reset_rating(teams,parameters['revert_import'],BackTo1500 = True)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/eliminations.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['Magnolia'],
+        2 : teams['San Miguel'],
+        3 : teams['Ginebra'],
+        4 : teams['Phoenix'],
+        5 : teams['Meralco'],
+        6 : teams['NorthPort'],
+        7 : teams['Rain or Shine'],
+        8 : teams['TNT']
+    }
+    wins = {
+        1 : 2,
+        2 : 3,
+        3 : 1,
+        4 : 1,
+        5 : 0,
+        6 : 0,
+        7 : 0,
+        8 : 0,
+    }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
+    data.append(info)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/playoffs.csv',
+        parameters['k_import'],
+        teams,
+        '2023-24','commissioner','playoffs',write_csv
+    )
+    data.append(info)
+    
+    # Philippine
+    
+    reset_rating(teams,parameters['revert_filipino'],BackTo1500 = True)
+    
+    info = simulate_round.game(
+        '2023-24/philippine/eliminations.csv',
+        parameters['k_filipino'],
+        teams,
+        '2023-24','philippine','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : teams['San Miguel'],
+        2 : teams['Ginebra'],
+        3 : teams['Meralco'],
+        4 : teams['TNT'],
+        5 : teams['Rain or Shine'],
+        6 : teams['NLEX'],
+        7 : teams['Magnolia'],
+        8 : teams['Terrafirma'],
+    }
+    
+    # wins = {
+        # 1 : 3,
+        # 2 : 2,
+        # 3 : 1,
+        # 4 : 0,
+        # 5 : 1,
+        # 6 : 0,
+        # 7 : 0,
+        # 8 : 0
+    # }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
+    data.append(info)
+    
+    # info = simulate_round.game(
+        # '2023-24/philippine/playoffs.csv',
+        # parameters['k_filipino'],
+        # teams,
+        # '2023-24','philippine','playoffs',write_csv
+    # )
+    
+    # data.append(info)
+    
+    with open('Playoffs/conference_reset.csv','w',newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(results_computer(data))
 
-# Split Elo Model
 def simulate_SeparateRating(parameters,write_csv = False):
     # parameters = {k, revert}
     
@@ -2648,13 +2669,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    series_wins_squared_error_temp = 0
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -2701,12 +2716,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -2754,12 +2764,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2809,12 +2814,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -2862,12 +2862,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -2915,12 +2910,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -2969,12 +2959,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3021,12 +3006,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -3073,12 +3053,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 1,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3128,12 +3103,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3182,12 +3152,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3234,12 +3199,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3289,12 +3249,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3342,12 +3297,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -3395,12 +3345,7 @@ def simulate_SeparateRating(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3414,11 +3359,105 @@ def simulate_SeparateRating(parameters,write_csv = False):
     data.append(info)
     update_main_ratings(teams,current_ratings,'Governors')
     
-    return results_computer(data)
+    # 2023-24
+    
+    # Commissioner
+    
+    reset_rating(teams,parameters['revert'],current_ratings,'Commissioner')
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/eliminations.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','commissioner','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : current_ratings['Magnolia'],
+        2 : current_ratings['San Miguel'],
+        3 : current_ratings['Ginebra'],
+        4 : current_ratings['Phoenix'],
+        5 : current_ratings['Meralco'],
+        6 : current_ratings['NorthPort'],
+        7 : current_ratings['Rain or Shine'],
+        8 : current_ratings['TNT']
+    }
+    wins = {
+        1 : 2,
+        2 : 3,
+        3 : 1,
+        4 : 1,
+        5 : 0,
+        6 : 0,
+        7 : 0,
+        8 : 0,
+    }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
+    data.append(info)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/playoffs.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','commissioner','playoffs',write_csv
+    )
+    data.append(info)
+    update_main_ratings(teams,current_ratings,'Commissioner')
+    
+    # Philippine
+    
+    reset_rating(teams,parameters['revert'],current_ratings,'Philippine')
+    
+    info = simulate_round.game(
+        '2023-24/philippine/eliminations.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','philippine','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : current_ratings['San Miguel'],
+        2 : current_ratings['Ginebra'],
+        3 : current_ratings['Meralco'],
+        4 : current_ratings['TNT'],
+        5 : current_ratings['Rain or Shine'],
+        6 : current_ratings['NLEX'],
+        7 : current_ratings['Magnolia'],
+        8 : current_ratings['Terrafirma'],
+    }
+    
+    # wins = {
+        # 1 : 3,
+        # 2 : 2,
+        # 3 : 1,
+        # 4 : 0,
+        # 5 : 1,
+        # 6 : 0,
+        # 7 : 0,
+        # 8 : 0
+    # }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
+    data.append(info)
+    
+    # info = simulate_round.game(
+        # '2023-24/philippine/playoffs.csv',
+        # parameters['k'],
+        # current_ratings,
+        # '2023-24','philippine','playoffs',write_csv
+    # )
+    
+    # data.append(info)
+    # update_main_ratings(teams,current_ratings,'Philippine')
+    
+    with open('Playoffs/split_elo.csv','w',newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(results_computer(data))
 
-# Blended Elo Model
 def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
-    # parameters = {k,revert_season,revert_filipino,revert_import,revert_conference}
+    # parameters = {k,revert_season,revert_filipino,revert_import,revert_previous_conference}
     
     if 'revert' in parameters.keys():
         parameters = {
@@ -3544,13 +3583,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    series_wins_squared_error_temp = 0
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3597,12 +3630,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -3650,12 +3678,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3705,12 +3728,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3758,12 +3776,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -3811,12 +3824,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -3865,12 +3873,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -3917,12 +3920,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -3969,12 +3967,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 1,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -4024,12 +4017,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -4078,12 +4066,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -4130,12 +4113,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -4185,12 +4163,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b07sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
     
     data.append(info)
     
@@ -4238,12 +4211,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice2_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b05sf(ranking)
     
     data.append(info)
     
@@ -4291,12 +4259,7 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
         8 : 0,
     }
     
-    info['data'] = playoffs_8teams.predict_wins_twice4_b05sf(ranking)
-    for key,value in info['data'].items():
-        value.append((value[3] - wins[key]) ** 2)
-        series_wins_squared_error_temp += value[-1]
-    info['data'] = series_wins_squared_error_temp
-    series_wins_squared_error_temp = 0
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
     
     data.append(info)
     
@@ -4309,5 +4272,100 @@ def simulate_SeparateRating_PreviousRevert(parameters,write_csv = False):
     
     data.append(info)
     update_main_ratings(teams,current_ratings,'Governors')
+    
+    # 2023-24
+    
+    # Commissioner
+    
+    reset_rating(teams,{'previous': parameters['revert_season'], 'conference':parameters ['revert_conference']},current_ratings,'Commissioner',True)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/eliminations.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','commissioner','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : current_ratings['Magnolia'],
+        2 : current_ratings['San Miguel'],
+        3 : current_ratings['Ginebra'],
+        4 : current_ratings['Phoenix'],
+        5 : current_ratings['Meralco'],
+        6 : current_ratings['NorthPort'],
+        7 : current_ratings['Rain or Shine'],
+        8 : current_ratings['TNT']
+    }
+    wins = {
+        1 : 2,
+        2 : 3,
+        3 : 1,
+        4 : 1,
+        5 : 0,
+        6 : 0,
+        7 : 0,
+        8 : 0,
+    }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice4_b05sf(ranking)
+    data.append(info)
+    
+    info = simulate_round.game(
+        '2023-24/commissioner/playoffs.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','commissioner','playoffs',write_csv
+    )
+    data.append(info)
+    update_main_ratings(teams,current_ratings,'Commissioner')
+    
+    # Philippine
+    
+    reset_rating(teams,{'previous': parameters['revert_season'], 'conference': parameters['revert_conference']},current_ratings,'Philippine',True)
+    
+    info = simulate_round.game(
+        '2023-24/philippine/eliminations.csv',
+        parameters['k'],
+        current_ratings,
+        '2023-24','philippine','eliminations',write_csv
+    )
+    
+    ranking = {
+        1 : current_ratings['San Miguel'],
+        2 : current_ratings['Ginebra'],
+        3 : current_ratings['Meralco'],
+        4 : current_ratings['TNT'],
+        5 : current_ratings['Rain or Shine'],
+        6 : current_ratings['NLEX'],
+        7 : current_ratings['Magnolia'],
+        8 : current_ratings['Terrafirma'],
+    }
+    
+    # wins = {
+        # 1 : 3,
+        # 2 : 2,
+        # 3 : 1,
+        # 4 : 0,
+        # 5 : 1,
+        # 6 : 0,
+        # 7 : 0,
+        # 8 : 0
+    # }
+    
+    info['data'] = playoffs_8teams2.predict_wins_twice2_b07sf(ranking)
+    
+    data.append(info)
+    
+    # info = simulate_round.game(
+        # '2023-24/philippine/playoffs.csv',
+        # parameters['k'],
+        # teams,
+        # '2023-24','philippine','playoffs',write_csv
+    # )
+    
+    # data.append(info)
+    # update_main_ratings(teams,current_ratings,'Philippine')
         
-    return results_computer(data)
+    with open('Playoffs/blended_elo.csv','w',newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(results_computer(data))
