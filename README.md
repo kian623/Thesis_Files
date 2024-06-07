@@ -17,7 +17,7 @@ Kindly refer to the following table regarding which naming conventions used in f
 
 ## Optimizing Parameters
 
-To optimize parameters, simply run `optimize.py`. The default values for the grid search are those indicated in the manuscript of my thesis. To change these values, edit the necessary CSV files (without csv files without "_result")
+To optimize parameters, simply run `optimize.py`. The default values for the grid search are those indicated in the manuscript of my thesis. To change these values, edit the necessary CSV files (csv files without "_result"). Values of the objective functions for each set of parameters can be found in the csv files ending in "_result".
 
 ## Evaluate Objective Functions and Modify CSV Files Containing Ratings
 
