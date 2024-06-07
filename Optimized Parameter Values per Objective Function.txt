@@ -1,0 +1,132 @@
+Conference Reset Model
+
+root series wins squared error
+
+k: 50
+brier: 0.2312502752015446
+logloss: 0.6543304552524973
+root series wins squared error: 2.399877656674707
+
+brier
+
+k: 50
+brier: 0.2312502752015446
+logloss: 0.6543304552524973
+root series wins squared error: 2.399877656674707
+
+logloss
+
+k: 50
+brier: 0.2312502752015446
+logloss: 0.6543304552524973
+root series wins squared error: 2.399877656674707
+
+Season Reset Model
+
+root series wins squared error
+
+k: 40
+revert: 0.53
+brier: 0.22795277363461094
+logloss: 0.6468811196507617
+root series wins squared error: 2.385958627247038
+
+brier
+
+k: 44
+revert: 0.63
+brier: 0.22770805528567067
+logloss: 0.6460608421119195
+root series wins squared error: 2.3877188889842755
+
+logloss
+
+k: 44
+revert: 0.67
+brier: 0.2277250280101534
+logloss: 0.6460320361226003
+root series wins squared error: 2.388589403131638
+
+Modified Silver Model
+
+root series wins squared error
+
+k: 12
+revert_season: 1.0
+revert_conference: 1.0
+brier: 0.22227089847174172
+logloss: 0.63463780189989
+root series wins squared error: 2.249580280219991
+
+brier
+
+k: 15
+revert_season: 1.0
+revert_conference: 1.0
+brier: 0.22209857291352372
+logloss: 0.6341642878552644
+root series wins squared error: 2.2515294938818506
+
+logloss
+
+k: 15
+revert_season: 1.0
+revert_conference: 1.0
+brier: 0.22209857291352372
+logloss: 0.6341642878552644
+root series wins squared error: 2.2515294938818506
+
+Split Elo Model
+
+root series wins squared error
+
+k: 25
+revert: 1.0
+brier: 0.22450816961436287
+logloss: 0.6408323993456675
+root series wins squared error: 2.2039493523296447
+
+brier
+
+k: 27
+revert: 1.0
+brier: 0.22446613478487035
+logloss: 0.6408484883591434
+root series wins squared error: 2.204638248381169
+
+logloss
+
+k: 26
+revert: 0.99
+brier: 0.22449410249153473
+logloss: 0.6408152516322881
+root series wins squared error: 2.205678141353991
+
+Modified Split Elo Model
+
+root series wins squared error
+
+k: 24
+revert: 0.22
+revert_conference: 0.78
+brier: 0.22162838121417344
+logloss: 0.6340803589997538
+root series wins squared error: 2.1929521950853914
+
+brier
+
+k: 26
+revert: 0.51
+revert_conference: 0.49
+brier: 0.22038784029758146
+logloss: 0.6308534320872857
+root series wins squared error: 2.208510170027103
+
+logloss
+
+k: 25
+revert: 0.55
+revert_conference: 0.45
+brier: 0.22040269182696998
+logloss: 0.6308196455953926
+root series wins squared error: 2.2110443231736276
